@@ -1,20 +1,24 @@
-//
-//  MarvelExplorerApp.swift
-//  MarvelExplorer
-//
-//  Created by Tiago Zontag on 06/02/21.
-//
-
 import SwiftUI
 
 @main
 struct MarvelExplorerApp: App {
-    let persistenceController = PersistenceController.shared
+
+    var viewModel: PagedContent<Character> = {
+        var networkController: MarvelNetworkController = DefaultNetworkController(networkDispatcher: URLSession.shared)
+        var getCharacterWorker = GetCharactersWorker(networkController: networkController)
+        var pagedContent = PagedContent<Character>(limit: 10)
+        pagedContent.getPagedContent = getCharacterWorker.callAsFunction
+//        var viewModel = GridViewModel(getCharacterWorker.callAsFunction)
+        return pagedContent
+    }()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            NavigationView {
+                GridView<Character, CharacterView>(detailContent: { CharacterView(character: $0) })
+                .environmentObject(viewModel)
+                .navigationBarTitle("Characteres")
+            }
         }
     }
 }
