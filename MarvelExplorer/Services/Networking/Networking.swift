@@ -12,7 +12,7 @@ protocol Target {
     var baseURL: String { get }
     var path: String { get }
     var method: NetworkingMethod { get }
-    var queryParams: [String: String] { get }
+    var queryParams: [String: String?] { get }
 }
 
 protocol TargetRequestable {
@@ -25,8 +25,9 @@ extension URLSession: TargetRequestable {
         var components = URLComponents()
         components.scheme = "https"
         components.host = target.baseURL
-        components.queryItems = target.queryParams.map { (param) -> URLQueryItem in
-            URLQueryItem(name: param.key, value: param.value)
+        components.queryItems = target.queryParams.compactMap { (param) -> URLQueryItem? in
+            guard let value = param.value, !value.isEmpty else { return nil }
+            return URLQueryItem(name: param.key, value: value)
         }
         components.path = target.path
         guard let url = components.url

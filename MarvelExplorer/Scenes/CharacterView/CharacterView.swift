@@ -30,17 +30,7 @@ struct CharacterView: View {
 #if DEBUG
 struct CharacterView_Previews: PreviewProvider {
     static var previews: some View {
-        CharacterView(character: .init(id: 0,
-                                       name: "Aladin",
-                                       resultDescription: "Melhor heroi ever!",
-                                       modified: Date(),
-                                       resourceURI: nil,
-                                       urls: [],
-                                       thumbnailURL: URL(string: "https://swiftui-lab.com/wp-content/uploads/2019/11/companion-dark.png"),
-                                       comics: nil,
-                                       stories: nil,
-                                       events: nil,
-                                       series: nil))
+        CharacterView(character: .mock)
     }
 }
 #endif

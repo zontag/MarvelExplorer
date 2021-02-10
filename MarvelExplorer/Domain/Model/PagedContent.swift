@@ -1,9 +1,10 @@
 import Foundation
 import Combine
 
-class PagedContent<Element>: ObservableObject {
+final class PagedContent<Element>: ObservableObject {
     @Published private(set) var results: [Element] = []
     @Published var isError: Bool = false
+    @Published var filter: String = ""
 
     private(set) var offset: Int = 0
     private(set) var limit: Int
@@ -11,12 +12,22 @@ class PagedContent<Element>: ObservableObject {
     private(set) var count: Int = 0
     private(set) var isFull = false
 
-    var getPagedContent: ((_ limit: Int, _ offset: Int) -> AnyPublisher<PagedContent<Element>, Error>)?
+    var getPagedContentWorker: AnyGetPagedContentWorker<Element>?
 
     private var cancellable: AnyCancellable?
+    private var filterCancellable: AnyCancellable?
 
-    init(limit: Int) {
+    init(limit: Int, worker: AnyGetPagedContentWorker<Element>) {
         self.limit = limit
+        self.getPagedContentWorker = worker
+        filterCancellable = $filter.sink { filter in
+            self.results.removeAll()
+            self.offset = 0
+            self.total = 0
+            self.count = 0
+            self.isFull = false
+            self.load(filter)
+        }
     }
 
     init(offset: Int, limit: Int, total: Int, count: Int, results: [Element]) {
@@ -27,18 +38,18 @@ class PagedContent<Element>: ObservableObject {
         self.results = results
     }
 
-    func load() {
+    func load(_ filter: String? = nil) {
         if isFull {
             return
         }
 
-        if getPagedContent == nil {
+        if getPagedContentWorker == nil {
             preconditionFailure()
         }
 
         isError = false
 
-        cancellable = getPagedContent?(limit, results.count)
+        cancellable = getPagedContentWorker?(limit: limit, offset: results.count, filter: filter ?? self.filter)
             .sink { completed in
                 switch completed {
                 case .finished: break
@@ -54,3 +65,15 @@ class PagedContent<Element>: ObservableObject {
             }
     }
 }
+
+#if DEBUG
+extension PagedContent where Element == Character {
+    static var mockCharacter: PagedContent<Character> = {
+        var characters: [Character] = []
+        for index in 0..<30 {
+            characters.append(Character.mock)
+        }
+        return PagedContent(offset: 0, limit: 30, total: 100, count: 4, results: characters)
+    }()
+}
+#endif
