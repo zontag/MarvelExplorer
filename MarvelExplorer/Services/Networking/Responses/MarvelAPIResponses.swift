@@ -29,25 +29,6 @@ struct CharacterResponse: Decodable {
     let resourceURI: String?
     let urls: [URLResourceResponse]?
     let thumbnail: ThumbnailResponse?
-    let comics: ResourceListResponse<EventResponse>?
-    let stories: ResourceListResponse<EventResponse>?
-    let events: ResourceListResponse<EventResponse>?
-    let series: ResourceListResponse<EventResponse>?
-}
-
-// MARK: - ResourceListResponse
-struct ResourceListResponse<Element>: Decodable where Element: Decodable {
-    let available: Int?
-    let returned: Int?
-    let collectionURI: String?
-    let items: [Element]?
-}
-
-// MARK: - EventResponse
-struct EventResponse: Codable {
-    let resourceURI: String?
-    let name: String?
-    let type: String?
 }
 
 // MARK: - ThumbnailResponse

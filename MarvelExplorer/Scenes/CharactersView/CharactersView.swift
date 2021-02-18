@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CharactersView: View {
 
-    @EnvironmentObject var model: PagedContent<Character>
+    @EnvironmentObject var model: CharactersManager
 
     var body: some View {
         VStack {
@@ -18,10 +18,11 @@ struct CharactersView: View {
             }.padding(.horizontal
         )
 
-            GridView(elements: model.results,
+            GridView(elements: model.characters,
                      isFull: model.isFull,
                      load: { model.load() },
-                     detailContent: CharacterView.init)
+                     detailContent: DetailView.init)
+                .padding(.horizontal)
 
         }.alert(isPresented: $model.isError) {
             Alert(title: Text("Ops.."),
@@ -35,7 +36,7 @@ struct CharactersView: View {
 struct CharactersView_Previews: PreviewProvider {
     static var previews: some View {
         CharactersView()
-            .environmentObject(PagedContent<Character>.mockCharacter)
+            .environmentObject(CharactersManager.mock)
     }
 }
 #endif

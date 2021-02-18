@@ -3,7 +3,7 @@ import Combine
 
 protocol GridViewItemModel {
     var id: Int { get }
-    var name: String { get }
+    var name: String? { get }
     var url: URL? { get }
 }
 
@@ -21,7 +21,7 @@ struct GridView<Element, DetailContent>: View where Element: GridViewItemModel, 
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(elements, id: \.id) { item in
                     NavigationLink(destination: detailContent(item)) {
-                        GridCell(name: item.name, url: item.url)
+                        GridCell(name: item.name ?? "", url: item.url)
                     }
                 }
 
@@ -39,10 +39,10 @@ struct GridView<Element, DetailContent>: View where Element: GridViewItemModel, 
 #if DEBUG
 struct GridView_Previews: PreviewProvider {
     static var previews: some View {
-        GridView<Character, Text>(elements: PagedContent.mockCharacter.results,
+        GridView<Character, Text>(elements: CharactersManager.mock.characters,
                                   isFull: false,
                                   load: {},
-                                  detailContent: { Text($0.name)})
+                                  detailContent: { Text($0.name ?? "")})
     }
 }
 #endif

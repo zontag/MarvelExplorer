@@ -6,8 +6,8 @@ enum MarvelAPI {
 
 extension MarvelAPI: Target {
 
-    static let publicKey = ""
-    static let privateKey = ""
+    static let publicKey = "c3606d96a1e199fb347665361d040c9b"
+    static let privateKey = "fab7f1177ea196548c4e9a0822d8260d41f2dd35"
 
     var baseURL: String { "gateway.marvel.com" }
 
